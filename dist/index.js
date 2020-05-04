@@ -4536,17 +4536,21 @@ module.exports = bytesToUuid;
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = __importDefault(__webpack_require__(470));
-const tool_cache_1 = __importDefault(__webpack_require__(533));
+const core = __importStar(__webpack_require__(470));
+const tc = __importStar(__webpack_require__(533));
 const monodiff = "monodiff";
-main().catch((error) => core_1.default.setFailed(error.message));
+main().catch((error) => core.setFailed(error.message));
 async function main() {
-    const version = core_1.default.getInput("version"); // TODO: Use latest version
-    const arch = core_1.default.getInput("arch") || "linux_x86_64"; // TODO: Detect from environment
+    const version = core.getInput("version"); // TODO: Use latest version
+    const arch = core.getInput("arch") || "linux_x86_64"; // TODO: Detect from environment
     await setup({ version, arch });
 }
 async function setup({ version, arch }) {
@@ -4554,17 +4558,17 @@ async function setup({ version, arch }) {
         version = "v" + version;
     }
     const url = `https://github.com/orangain/monodiff/releases/download/${version}/monodiff_${arch}.tar.gz`;
-    let toolPath = tool_cache_1.default.find(monodiff, version, arch);
+    let toolPath = tc.find(monodiff, version, arch);
     if (toolPath) {
-        core_1.default.debug(`Tool ${monodiff} found in cache ${toolPath}`);
+        core.debug(`Tool ${monodiff} found in cache ${toolPath}`);
     }
     else {
-        core_1.default.debug(`Downloading monodiff from ${url}`);
-        const archivePath = await tool_cache_1.default.downloadTool(url);
-        const extractedPath = await tool_cache_1.default.extractTar(archivePath);
-        toolPath = await tool_cache_1.default.cacheDir(extractedPath, monodiff, version, arch);
+        core.debug(`Downloading monodiff from ${url}`);
+        const archivePath = await tc.downloadTool(url);
+        const extractedPath = await tc.extractTar(archivePath);
+        toolPath = await tc.cacheDir(extractedPath, monodiff, version, arch);
     }
-    core_1.default.addPath(toolPath);
+    core.addPath(toolPath);
 }
 
 
