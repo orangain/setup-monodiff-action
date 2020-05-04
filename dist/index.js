@@ -4549,15 +4549,26 @@ const tc = __importStar(__webpack_require__(533));
 const monodiff = "monodiff";
 main().catch((error) => core.setFailed(error.message));
 async function main() {
-    const version = core.getInput("version"); // TODO: Use latest version
-    const arch = core.getInput("arch") || "linux_x86_64"; // TODO: Detect from environment
-    await setup({ version, arch });
-}
-async function setup({ version, arch }) {
+    let version = core.getInput("version"); // TODO: Use latest version
     if (!version.startsWith("v")) {
         version = "v" + version;
     }
-    const url = `https://github.com/orangain/monodiff/releases/download/${version}/monodiff_${arch}.tar.gz`;
+    let os;
+    if (process.platform === "win32") {
+        os = "windows";
+    }
+    else if (process.platform === "darwin") {
+        os = "darwin";
+    }
+    else {
+        os = "linux";
+    }
+    const arch = "x86_64";
+    await setup({ version, os, arch });
+}
+async function setup({ version, os, arch }) {
+    const ext = os === "windows" ? "zip" : "tar.gz";
+    const url = `https://github.com/orangain/monodiff/releases/download/${version}/monodiff_${os}_${arch}.${ext}`;
     let toolPath = tc.find(monodiff, version, arch);
     if (toolPath) {
         core.debug(`Tool ${monodiff} found in cache ${toolPath}`);
@@ -4565,7 +4576,9 @@ async function setup({ version, arch }) {
     else {
         core.debug(`Downloading monodiff from ${url}`);
         const archivePath = await tc.downloadTool(url);
-        const extractedPath = await tc.extractTar(archivePath);
+        const extractedPath = await (ext === "zip"
+            ? tc.extractZip(archivePath)
+            : tc.extractTar(archivePath));
         toolPath = await tc.cacheDir(extractedPath, monodiff, version, arch);
     }
     core.addPath(toolPath);

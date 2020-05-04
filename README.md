@@ -14,10 +14,6 @@ uses: orangain/setup-monodiff-action@v1
 
 **Optional** Version of monodiff. Default `"0.0.1"`.
 
-### `arch`
-
-**Optional** Target architecture of monodiff binary. Default `"linux_x86_64"`.
-
 ## Develop
 
 See: https://help.github.com/en/actions/building-actions/creating-a-javascript-action

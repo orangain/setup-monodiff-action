@@ -5,9 +5,6 @@ inputs:
     description: "Version of monodiff"
     required: false
     default: "0.0.1"
-  arch:
-    description: "Target architecture of monodiff binary"
-    required: false
 
 runs:
   using: "node12"
