@@ -1,0 +1,14 @@
+name: "Setup monodiff"
+description: "Set up a specific version of monodiff and add it to the PATH"
+inputs:
+  version:
+    description: "Version of monodiff"
+    required: false
+    default: "0.0.1"
+  arch:
+    description: "Target architecture of monodiff binary"
+    required: false
+
+runs:
+  using: "node12"
+  main: "dist/index.js"
