@@ -4609,6 +4609,7 @@ async function getJSON(url) {
 async function setup({ version, os, arch }) {
     const ext = os === "windows" ? "zip" : "tar.gz";
     const url = `https://github.com/orangain/monodiff/releases/download/${version}/monodiff_${os}_${arch}.${ext}`;
+    core.debug(`url: ${url}`);
     let toolPath = tc.find(monodiff, version, arch);
     if (toolPath) {
         core.debug(`Tool ${monodiff} found in cache ${toolPath}`);

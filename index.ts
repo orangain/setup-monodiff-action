@@ -73,6 +73,7 @@ async function getJSON(url: string): Promise<any> {
 async function setup({ version, os, arch }: MainArgs) {
   const ext = os === "windows" ? "zip" : "tar.gz";
   const url = `https://github.com/orangain/monodiff/releases/download/${version}/monodiff_${os}_${arch}.${ext}`;
+  core.debug(`url: ${url}`);
 
   let toolPath = tc.find(monodiff, version, arch);
   if (toolPath) {
