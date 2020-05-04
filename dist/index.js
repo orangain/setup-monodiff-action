@@ -4536,6 +4536,9 @@ module.exports = bytesToUuid;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -4544,13 +4547,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const https_1 = __importDefault(__webpack_require__(211));
 const core = __importStar(__webpack_require__(470));
 const tc = __importStar(__webpack_require__(533));
 const monodiff = "monodiff";
 main().catch((error) => core.setFailed(error.message));
 async function main() {
-    let version = core.getInput("version"); // TODO: Use latest version
-    if (!version.startsWith("v")) {
+    let version = core.getInput("version");
+    if (!version) {
+        version = await getLatestVersion();
+        core.debug(`Got latest version: ${version}`);
+    }
+    else if (!version.startsWith("v")) {
         version = "v" + version;
     }
     let os;
@@ -4565,6 +4573,38 @@ async function main() {
     }
     const arch = "x86_64";
     await setup({ version, os, arch });
+}
+async function getLatestVersion() {
+    const url = "https://api.github.com/repos/orangain/monodiff/releases/latest";
+    const json = await getJSON(url);
+    return json.tag_name;
+}
+async function getJSON(url) {
+    const options = {
+        headers: {
+            accept: "application/json",
+            "user-agent": "setup-monodiff-action",
+        },
+    };
+    return new Promise((resolve, reject) => {
+        https_1.default
+            .get(url, options, (res) => {
+            core.debug(`res.statusCode: ${res.statusCode}`);
+            if (res.statusCode < 200 || res.statusCode >= 300) {
+                reject(new Error(`Non successful response: ${res.statusCode}`));
+            }
+            let data = "";
+            res.on("data", (chunk) => {
+                data += chunk;
+            });
+            res.on("end", () => {
+                resolve(JSON.parse(data));
+            });
+        })
+            .on("error", (e) => {
+            reject(e);
+        });
+    });
 }
 async function setup({ version, os, arch }) {
     const ext = os === "windows" ? "zip" : "tar.gz";

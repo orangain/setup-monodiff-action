@@ -4,7 +4,6 @@ inputs:
   version:
     description: "Version of monodiff"
     required: false
-    default: "0.0.1"
 
 runs:
   using: "node12"
